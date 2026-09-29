@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>FEPI TOOLS</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==================== TEMA TERANG (DEFAULT) ==================== */
+    :root {
+      --bg-main: #F0F0F3;
+      --bg-card: #FFFFFF;
+      --bg-soft: #F5F5F8;
+      --bg-muted: #E8E8EE;
+      --blue-primary: #3B4CC0;
+      --blue-dark: #2E3B99;
+      --blue-soft: #E8EAF6;
+      --blue-accent: #5C6BC0;
+      --text-primary: #2C2C34;
+      --text-secondary: #7A7A85;
+      --text-muted: #A0A0AB;
+      --shadow-card: 6px 6px 16px rgba(174, 174, 192, 0.4), -6px -6px 16px rgba(255, 255, 255, 0.9);
+      --shadow-card-sm: 3px 3px 8px rgba(174, 174, 192, 0.3), -3px -3px 8px rgba(255, 255, 255, 0.9);
+      --shadow-btn: 4px 4px 12px rgba(174, 174, 192, 0.35), -4px -4px 12px rgba(255, 255, 255, 0.9);
+      --shadow-inset: inset 2px 2px 6px rgba(174, 174, 192, 0.3), inset -2px -2px 6px rgba(255, 255, 255, 0.9);
+      --loader-bg: linear-gradient(135deg, #F0F0F3 0%, #E8EAF6 50%, #F0F0F3 100%);
+      --radius-card: 24px;
+      --radius-btn: 16px;
+      --radius-pill: 50px;
+      --radius-sm: 12px;
+    }
+
+    /* ==================== TEMA GELAP ==================== */
+    /* Dipicu oleh 2 hal: (1) prefers-color-scheme, (2) atribut data-theme="dark" di <html> */
+    [data-theme="dark"] {
+      --bg-main: #14141A;
+      --bg-card: #1E1E28;
+      --bg-soft: #25252F;
+      --bg-muted: #2C2C38;
+      --blue-primary: #7B8AF0;
+      --blue-dark: #5C6BC0;
+      --blue-soft: #2A2E48;
+      --blue-accent: #8B9AF5;
+      --text-primary: #ECECF2;
+      --text-secondary: #A0A0B0;
+      --text-muted: #6E6E7E;
+      --shadow-card: 6px 6px 16px rgba(0, 0, 0, 0.45), -6px -6px 16px rgba(40, 40, 55, 0.5);
+      --shadow-card-sm: 3px 3px 8px rgba(0, 0, 0, 0.4), -3px -3px 8px rgba(40, 40, 55, 0.4);
+      --shadow-btn: 4px 4px 12px rgba(0, 0, 0, 0.4), -4px -4px 12px rgba(40, 40, 55, 0.45);
+      --shadow-inset: inset 2px 2px 6px rgba(0, 0, 0, 0.5), inset -2px -2px 6px rgba(50, 50, 65, 0.4);
+      --loader-bg: linear-gradient(135deg, #14141A 0%, #1E1E3A 50%, #14141A 100%);
+    }
+
+    /* Auto dari sistem — HANYA jika user belum set manual */
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme]) {
+        --bg-main: #14141A;
+        --bg-card: #1E1E28;
+        --bg-soft: #25252F;
+        --bg-muted: #2C2C38;
+        --blue-primary: #7B8AF0;
+        --blue-dark: #5C6BC0;
+        --blue-soft: #2A2E48;
+        --blue-accent: #8B9AF5;
+        --text-primary: #ECECF2;
+        --text-secondary: #A0A0B0;
+        --text-muted: #6E6E7E;
+        --shadow-card: 6px 6px 16px rgba(0, 0, 0, 0.45), -6px -6px 16px rgba(40, 40, 55, 0.5);
+        --shadow-card-sm: 3px 3px 8px rgba(0, 0, 0, 0.4), -3px -3px 8px rgba(40, 40, 55, 0.4);
+        --shadow-btn: 4px 4px 12px rgba(0, 0, 0, 0.4), -4px -4px 12px rgba(40, 40, 55, 0.45);
+        --shadow-inset: inset 2px 2px 6px rgba(0, 0, 0, 0.5), inset -2px -2px 6px rgba(50, 50, 65, 0.4);
+        --loader-bg: linear-gradient(135deg, #14141A 0%, #1E1E3A 50%, #14141A 100%);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg-main);
+      color: var(--text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 0;
+      overflow: hidden;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* ==================== PAGE LOADER (BARU) ==================== */
+    .page-loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--loader-bg);
+      background-size: 200% 200%;
+      animation: loaderGradient 5s ease infinite;
+      z-index: 99999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      /* Animasi "mantul ke bawah" saat keluar */
+      transition: transform 1s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                  opacity 0.6s ease 0.4s;
+      will-change: transform;
+    }
+
+    /* Loader yang lagi "mantul" ke bawah */
+    .page-loader.bounce-out {
+      transform: translateY(120vh);
+      opacity: 0;
+    }
+
+    @keyframes loaderGradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Orb / bola berdenyut */
+    .loader-orb-wrapper {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loader-orb {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #8B9AF5, var(--blue-primary) 60%, var(--blue-dark));
+      box-shadow: 
+        0 0 30px rgba(59, 76, 192, 0.5),
+        0 0 60px rgba(59, 76, 192, 0.25),
+        inset -10px -10px 20px rgba(0, 0, 0, 0.15);
+      animation: orbFloat 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-14px) scale(1.05); }
+    }
+
+    /* Cincin pulse di sekitar orb */
+    .loader-orb-pulse {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 2px solid var(--blue-primary);
+      opacity: 0.6;
+      animation: pulseRing 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+
+    .loader-orb-pulse.pulse-2 {
+      animation-delay: 0.8s;
+    }
+
+    @keyframes pulseRing {
+      0% { transform: scale(1); opacity: 0.6; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .loader-text {
+      font-weight: 900;
+      font-size: 1.3rem;
+      letter-spacing: 3px;
+      color: var(--blue-primary);
+      white-space: nowrap;
+      animation: textShine 2.5s ease-in-out infinite;
+    }
+
+    @keyframes textShine {
+      0%, 100% {
+        text-shadow: 0 0 10px rgba(59, 76, 192, 0.25);
+        opacity: 0.9;
+      }
+      50% {
+        text-shadow: 0 0 20px rgba(59, 76, 192, 0.55), 0 0 40px rgba(59, 76, 192, 0.3);
+        opacity: 1;
+      }
+    }
+
+    .loader-status {
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+      min-height: 1.2em;
+    }
+
+    /* Loading dots baru */
+    .loader-dots {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .loader-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--blue-primary);
+      animation: dotWave 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    }
+
+    .loader-dots span:nth-child(1) { animation-delay: 0s; }
+    .loader-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .loader-dots span:nth-child(3) { animation-delay: 0.3s; }
+    .loader-dots span:nth-child(4) { animation-delay: 0.45s; }
+
+    @keyframes dotWave {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50% { transform: scale(1.4); opacity: 1; }
+    }
+
+    /* ==================== ANIMASI MASUK ==================== */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(70px);
+      transition: opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: opacity, transform;
+    }
+
+    .fade-up.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .icon-svg {
+      width: 1.2em;
+      height: 1.2em;
+      fill: currentColor;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      height: 100vh;
+      background-color: var(--bg-main);
+      padding: 20px 18px;
+      position: relative;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.4s ease, background-color 0.4s ease;
+    }
+
+    .app-container.ready { opacity: 1; }
+    .app-container::-webkit-scrollbar { width: 0px; }
+
+    .header-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+
+    .menu-btn {
+      width: 44px;
+      height: 44px;
+      background-color: var(--bg-card);
+      border: none;
+      border-radius: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      color: var(--blue-primary);
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-card-sm);
+    }
+
+    .menu-btn .icon-svg { width: 20px; height: 20px; }
+    .menu-btn:active { box-shadow: var(--shadow-inset); }
+
+    .header-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Tombol toggle tema */
+    .theme-btn {
+      width: 44px;
+      height: 44px;
+      background-color: var(--bg-card);
+      border: none;
+      border-radius: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      color: var(--blue-primary);
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-card-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .theme-btn .icon-svg {
+      width: 20px;
+      height: 20px;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+      position: absolute;
+    }
+
+    .theme-btn:active { box-shadow: var(--shadow-inset); }
+    .theme-btn:active .icon-svg { transform: rotate(180deg) scale(0.9); }
+
+    /* Icon bulan (muncul di mode terang, siap tukar ke gelap) */
+    .theme-btn .icon-moon {
+      opacity: 1;
+      transform: rotate(0deg);
+    }
+
+    .theme-btn .icon-sun {
+      opacity: 0;
+      transform: rotate(-180deg) scale(0.5);
+    }
+
+    /* Kalau mode gelap, tampilkan matahari */
+    [data-theme="dark"] .theme-btn .icon-moon {
+      opacity: 0;
+      transform: rotate(180deg) scale(0.5);
+    }
+
+    [data-theme="dark"] .theme-btn .icon-sun {
+      opacity: 1;
+      transform: rotate(0deg) scale(1);
+    }
+
+    .brand-title {
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: -0.3px;
+      cursor: pointer;
+      user-select: none;
+      color: var(--blue-primary);
+      flex: 1;
+      text-align: center;
+    }
+
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      display: none;
+      z-index: 99;
+    }
+
+    .sidebar {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 270px;
+      height: 100%;
+      background: var(--bg-main);
+      z-index: 100;
+      padding: 24px 18px;
+      transition: left 0.3s ease, background-color 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .sidebar.open { left: 0; }
+
+    .sidebar h3 {
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+      padding-bottom: 12px;
+      color: var(--blue-primary);
+    }
+
+    .sidebar a {
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-card-sm);
+      flex-shrink: 0;
+    }
+
+    .sidebar a .icon-svg { width: 18px; height: 18px; color: var(--blue-primary); }
+    .sidebar a:active { box-shadow: var(--shadow-inset); }
+
+    .sidebar-divider {
+      height: 1px;
+      background: rgba(128, 128, 148, 0.15);
+      margin: 8px 0;
+      flex-shrink: 0;
+    }
+
+    .profile-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 22px;
+      flex-shrink: 0;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, var(--blue-primary), var(--blue-accent));
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 22px rgba(59, 76, 192, 0.35);
+      position: relative;
+    }
+
+    .avatar-spinner {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 32px;
+      height: 32px;
+      margin-top: -16px;
+      margin-left: -16px;
+      border: 3px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #FFFFFF;
+      border-radius: 50%;
+      animation: avatarSpin 0.85s linear infinite;
+      z-index: 2;
+      transition: opacity 0.4s ease;
+    }
+
+    @keyframes avatarSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .avatar-spinner.hide { opacity: 0; }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .profile-avatar img.loaded { opacity: 1; }
+
+    .profile-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--blue-primary);
+      background: var(--bg-card);
+      padding: 7px 20px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-card-sm);
+      transition: background-color 0.4s ease;
+    }
+
+    .links-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .pill-btn {
+      background-color: var(--bg-card);
+      border: none;
+      border-radius: 50px;
+      padding: 10px 8px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-card-sm);
+      line-height: 1.2;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
+    }
+
+    .pill-btn .icon-svg { width: 18px; height: 18px; color: var(--blue-primary); }
+    .pill-btn:active { box-shadow: var(--shadow-inset); }
+
+    .stat-card {
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      border: none;
+      border-radius: 18px;
+      padding: 12px 10px;
+      text-align: center;
+      box-shadow: var(--shadow-card-sm);
+      position: relative;
+      min-height: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.4s ease;
+    }
+
+    .stat-title {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 1.15rem;
+      font-weight: 900;
+      margin-top: 4px;
+      color: var(--blue-primary);
+    }
+
+    .stat-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .stat-loading.hide { display: none; }
+
+    .stat-mini-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(59, 76, 192, 0.2);
+      border-top-color: var(--blue-primary);
+      border-radius: 50%;
+      animation: miniSpin 0.8s linear infinite;
+    }
+
+    @keyframes miniSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .stat-loading-text {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--blue-primary);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .grid-card {
+      aspect-ratio: 1 / 1;
+      border: none;
+      border-radius: var(--radius-card);
+      background: var(--bg-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+      padding: 16px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .grid-card .icon-svg {
+      width: 42px;
+      height: 42px;
+      color: var(--blue-primary);
+      transition: all 0.2s ease;
+    }
+
+    .grid-card span {
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-align: center;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .grid-card:active {
+      box-shadow: var(--shadow-inset);
+      transform: scale(0.98);
+    }
+
+    .page-section {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .page-section.active { display: flex; }
+
+    .page-title {
+      font-weight: 900;
+      font-size: 1.15rem;
+      margin-bottom: 14px;
+      color: var(--blue-primary);
+      letter-spacing: -0.3px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: none;
+      padding: 10px 16px;
+      border-radius: 50px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      margin-bottom: 16px;
+      align-self: flex-start;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-card-sm);
+    }
+
+    .back-btn .icon-svg { width: 16px; height: 16px; color: var(--blue-primary); }
+    .back-btn:active { box-shadow: var(--shadow-inset); }
+
+    .input-box {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      outline: none;
+      background-color: var(--bg-card);
+      margin-bottom: 14px;
+      transition: all 0.3s ease;
+      color: var(--text-primary);
+      box-shadow: var(--shadow-inset);
+    }
+
+    .input-box::placeholder { color: var(--text-muted); font-weight: 600; }
+    .input-box:focus { box-shadow: var(--shadow-inset), 0 0 0 3px rgba(59, 76, 192, 0.15); }
+
+    .input-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 14px;
+    }
+
+    .input-wrapper .input-box {
+      margin-bottom: 0;
+      padding-right: 100px;
+    }
+
+    .paste-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--blue-primary);
+      border: none;
+      color: #FFFFFF;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.72rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      box-shadow: 0 4px 10px rgba(59, 76, 192, 0.3);
+    }
+
+    .paste-btn .icon-svg { width: 12px; height: 12px; }
+    .paste-btn:active { background: var(--blue-dark); transform: translateY(-50%) scale(0.95); }
+    .paste-btn.success { background: #10B981; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+
+    .action-btn {
+      width: 100%;
+      background-color: var(--blue-primary);
+      border: none;
+      padding: 16px;
+      border-radius: 18px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #FFFFFF;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 16px rgba(59, 76, 192, 0.35);
+      font-family: inherit;
+    }
+
+    .action-btn .icon-svg { width: 18px; height: 18px; }
+    .action-btn:active { background: var(--blue-dark); transform: scale(0.98); }
+
+    .action-btn.wa-btn {
+      background: #25D366;
+      box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+    }
+
+    .action-btn.wa-btn:active { background: #1DA851; }
+
+    .form-label {
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-select, .form-textarea {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      outline: none;
+      background-color: var(--bg-card);
+      margin-bottom: 14px;
+      transition: all 0.3s ease;
+      color: var(--text-primary);
+      box-shadow: var(--shadow-inset);
+      font-family: inherit;
+    }
+
+    .form-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233B4CC0'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 20px;
+      padding-right: 48px;
+      cursor: pointer;
+    }
+
+    .form-textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
+
+    .form-select:focus, .form-textarea:focus {
+      box-shadow: var(--shadow-inset), 0 0 0 3px rgba(59, 76, 192, 0.15);
+    }
+
+    .result-card {
+      margin-top: 16px;
+      background: var(--bg-card);
+      border: none;
+      border-radius: 22px;
+      padding: 16px;
+      display: none;
+      box-shadow: var(--shadow-card);
+      transition: background-color 0.4s ease;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-soft);
+      border-radius: 18px;
+      margin-bottom: 12px;
+    }
+
+    .profile-header-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--blue-soft);
+      flex-shrink: 0;
+    }
+
+    .profile-header-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .profile-header-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+
+    .profile-header-name {
+      font-weight: 900;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .profile-header-username {
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .caption-text {
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background: var(--bg-soft);
+      padding: 12px;
+      border-radius: 14px;
+      border-left: 4px solid var(--blue-primary);
+    }
+
+    .info-text {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-soft);
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      min-width: 0;
+    }
+
+    .info-item .icon-svg { width: 16px; height: 16px; color: var(--blue-primary); flex-shrink: 0; }
+    .info-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .media-container {
+      width: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #1a1a2e;
+      position: relative;
+      margin-bottom: 12px;
+      line-height: 0;
+      box-shadow: var(--shadow-card-sm);
+    }
+
+    .media-container img, .media-container video {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    .slide-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(59, 76, 192, 0.9);
+      color: #FFFFFF;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      z-index: 2;
+    }
+
+    .slide-carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      gap: 6px;
+      padding: 6px;
+      background: #1a1a2e;
+      scrollbar-width: none;
+    }
+
+    .slide-carousel::-webkit-scrollbar { display: none; }
+
+    .slide-carousel img, .slide-carousel video {
+      scroll-snap-align: center;
+      flex: 0 0 100%;
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #000;
+    }
+
+    .carousel-wrapper { position: relative; }
+
+    .carousel-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 8px 8px;
+      background: #1a1a2e;
+    }
+
+    .carousel-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #FFFFFF;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .carousel-btn .icon-svg { width: 14px; height: 14px; }
+    .carousel-btn:active { background: rgba(255, 255, 255, 0.3); }
+    .carousel-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .carousel-counter {
+      color: #FFFFFF;
+      font-weight: 900;
+      font-size: 0.75rem;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50px;
+      white-space: nowrap;
+    }
+
+    .dl-btn-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .dl-btn {
+      background: var(--bg-soft);
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      box-shadow: var(--shadow-card-sm);
+    }
+
+    .dl-btn .icon-svg { width: 16px; height: 16px; color: var(--blue-primary); }
+    .dl-btn:active { box-shadow: var(--shadow-inset); }
+
+    .dl-btn.primary {
+      background: var(--blue-primary);
+      color: #FFFFFF;
+      box-shadow: 0 6px 16px rgba(59, 76, 192, 0.3);
+    }
+
+    .dl-btn.primary .icon-svg { color: #FFFFFF; }
+    .dl-btn.primary:active { background: var(--blue-dark); }
+
+    .dl-btn.success { background: var(--blue-soft); color: var(--blue-primary); }
+    .dl-btn.success .icon-svg { color: var(--blue-primary); }
+
+    .stalk-info-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    .stalk-info-item {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 12px 14px;
+      background: var(--bg-soft);
+      border-radius: 14px;
+    }
+
+    .stalk-info-item span.label {
+      font-weight: 700;
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 3px;
+      letter-spacing: 0.3px;
+    }
+
+    .stalk-info-item span.value {
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .loader {
+      display: none;
+      text-align: center;
+      font-weight: 700;
+      margin: 18px 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .spinner-svg {
+      animation: spin 1s linear infinite;
+      color: var(--blue-primary);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .home-footer {
+      text-align: center;
+      padding-top: 14px;
+      border-top: 1px solid rgba(128, 128, 148, 0.15);
+      margin-top: auto;
+    }
+
+    .home-footer p {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .contact-info-card {
+      margin-top: 16px;
+      padding: 16px;
+      background: var(--bg-card);
+      border-radius: 18px;
+      box-shadow: var(--shadow-card-sm);
+      transition: background-color 0.4s ease;
+    }
+
+    .contact-info-card .label {
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .contact-info-card .value {
+      font-weight: 900;
+      font-size: 1rem;
+      color: var(--blue-primary);
+    }
+
+    .contact-desc {
+      font-weight: 700;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .coming-soon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 20px;
+      gap: 16px;
+    }
+
+    .coming-soon .icon-svg {
+      width: 80px;
+      height: 80px;
+      color: var(--blue-primary);
+      opacity: 0.5;
+    }
+
+    .coming-soon h3 {
+      font-weight: 900;
+      font-size: 1.3rem;
+      color: var(--blue-primary);
+    }
+
+    .coming-soon p {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 280px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== PAGE LOADER (BARU) ==================== -->
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-orb-wrapper">
+      <div class="loader-orb-pulse"></div>
+      <div class="loader-orb-pulse pulse-2"></div>
+      <div class="loader-orb"></div>
+    </div>
+    <div class="loader-text" id="loaderText">FEPI TOOLS</div>
+    <div class="loader-status" id="loaderStatus">Memuat halaman...</div>
+    <div class="loader-dots">
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="app-container" id="appContainer">
+    
+    <!-- SIDEBAR -->
+    <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+      <h3>Menu Navigasi</h3>
+
+      <a href="javascript:void(0)" onclick="showPage('contactPage'); toggleMenu();">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M16.75 13.96c-.25-.13-1.47-.72-1.7-.81-.22-.08-.39-.13-.56.12-.17.25-.66.81-.81.98-.15.17-.31.19-.56.07-.25-.13-1.07-.39-2.04-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.22.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.13.17 1.73 2.64 4.19 3.7.59.25 1.04.41 1.4.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.17-.48-.3zM12 2a10 10 0 0 0-10 10c0 1.77.46 3.45 1.28 4.92L2 22l5.25-1.38A9.94 9.94 0 0 0 12 22a10 10 0 0 0 10-10A10 10 0 0 0 12 2z"/></svg>
+        Contact Me
+      </a>
+      <a href="javascript:void(0)" onclick="showPage('reportBugPage'); toggleMenu();">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 8h-2.81c-.45-.78-1.07-1.45-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5c-.49 0-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z"/></svg>
+        Report Bug
+      </a>
+      <a href="javascript:void(0)" onclick="showPage('requestFeaturePage'); toggleMenu();">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"/></svg>
+        Request Fitur
+      </a>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header-nav fade-up" id="anim-header">
+      <button class="menu-btn" onclick="toggleMenu()" aria-label="Toggle Menu">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div class="brand-title">FEPI TOOLS</div>
+      <div class="header-right">
+        <button class="theme-btn" onclick="toggleTheme()" aria-label="Toggle Tema">
+          <!-- Icon bulan (mode terang) -->
+          <svg class="icon-svg icon-moon" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+          <!-- Icon matahari (mode gelap) -->
+          <svg class="icon-svg icon-sun" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41.39.39 1.03.39 1.41 0l1.06-1.06z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ==================== HOME PAGE ==================== -->
+    <div id="homePage" class="page-section active">
+      <section class="profile-section">
+        <div class="profile-avatar fade-up" id="anim-avatar">
+          <div class="avatar-spinner" id="avatarSpinner"></div>
+          <img src="" 
+               alt="Profil" 
+               id="profileImage"
+               loading="eager"
+               decoding="async"
+               fetchpriority="high"
+               onload="this.classList.add('loaded'); document.getElementById('avatarSpinner').classList.add('hide');">
+        </div>
+        <div class="profile-name fade-up" id="anim-name">Tools Serba Bisa</div>
+      </section>
+
+      <section class="links-grid">
+        <a href="https://tiktok.com/@fenditiktok__" target="_blank" rel="noopener noreferrer" class="pill-btn fade-up" id="anim-link1" draggable="false">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 3 15.68 6.34 6.34 0 0 0 9.38 22a6.34 6.34 0 0 0 6.33-6.33V9.33a8.16 8.16 0 0 0 4.88 1.6V7.48a4.85 4.85 0 0 1-1-.79z"/></svg> TikTok
+        </a>
+        <a href="https://www.fendistore.my.id" target="_blank" rel="noopener noreferrer" class="pill-btn fade-up" id="linkBioData" draggable="false">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg> Bio Data
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb9J9cMKbYMP4nueJX2B" target="_blank" rel="noopener noreferrer" class="pill-btn fade-up" id="anim-link3" draggable="false">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M16.75 13.96c-.25-.13-1.47-.72-1.7-.81-.22-.08-.39-.13-.56.12-.17.25-.66.81-.81.98-.15.17-.31.19-.56.07-.25-.13-1.07-.39-2.04-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.22.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.13.17 1.73 2.64 4.19 3.7.59.25 1.04.41 1.4.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.17-.48-.3zM12 2a10 10 0 0 0-10 10c0 1.77.46 3.45 1.28 4.92L2 22l5.25-1.38A9.94 9.94 0 0 0 12 22a10 10 0 0 0 10-10A10 10 0 0 0 12 2z"/></svg> Saluran WA
+        </a>
+      </section>
+
+      <section class="stats-grid">
+        <div class="stat-card fade-up" id="anim-stat1">
+          <div class="stat-title">Pengunjung</div>
+          <div class="stat-loading" id="visitorLoading">
+            <div class="stat-mini-spinner"></div>
+            <span class="stat-loading-text">Memuat...</span>
+          </div>
+          <div class="stat-value" id="visitorCount" style="display:none;">0</div>
+        </div>
+        <div class="stat-card fade-up" id="anim-stat2">
+          <div class="stat-title">Total Fitur</div>
+          <div class="stat-value" id="totalFeaturesCount">0</div>
+        </div>
+      </section>
+
+      <main class="menu-grid">
+        <div class="grid-card fade-up" id="anim-card1" onclick="showPage('downloaderMenuPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+          <span>Downloader</span>
+        </div>
+
+        <div class="grid-card fade-up" id="anim-card2" onclick="showPage('makerMenuPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M7.5 5.6L5 7l1.4-2.5L5 2l2.5 1.4L10 2 8.6 4.5 10 7 7.5 5.6zm12 9.8L17 14l1.4 2.5L17 19l2.5-1.4L22 19l-1.4-2.5L22 14l-2.5 1.4zM22 2l-2.5 1.4L17 2l1.4 2.5L17 7l2.5-1.4L22 7l-1.4-2.5L22 2zm-7.63 5.29c-.39-.39-1.02-.39-1.41 0L1.29 18.96c-.39.39-.39 1.02 0 1.41l2.34 2.34c.39.39 1.02.39 1.41 0L16.7 11.05c.39-.39.39-1.02 0-1.41l-2.33-2.35zm-1.03 5.49l-2.12-2.12 2.44-2.44 2.12 2.12-2.44 2.44z"/></svg>
+          <span>Maker</span>
+        </div>
+
+        <div class="grid-card fade-up" id="anim-card3" onclick="showPage('stalkMenuPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <span>Stalk</span>
+        </div>
+
+        <div class="grid-card fade-up" id="anim-card4" onclick="showPage('lainnyaMenuPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>
+          <span>Lainnya</span>
+        </div>
+      </main>
+
+      <footer class="home-footer fade-up" id="anim-footer">
+        <p>© 2026 Fepi Tools</p>
+      </footer>
+    </div>
+
+    <!-- ==================== DOWNLOADER MENU ==================== -->
+    <div id="downloaderMenuPage" class="page-section">
+      <button class="back-btn" onclick="showPage('homePage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Pilih Downloader</h2>
+
+      <main class="menu-grid">
+        <div class="grid-card feature-item" onclick="showPage('tiktokDownloaderPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 3 15.68 6.34 6.34 0 0 0 9.38 22a6.34 6.34 0 0 0 6.33-6.33V9.33a8.16 8.16 0 0 0 4.88 1.6V7.48a4.85 4.85 0 0 1-1-.79z"/></svg>
+          <span>TikTok</span>
+        </div>
+
+        <div class="grid-card feature-item" onclick="showPage('igDownloaderPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          <span>Instagram</span>
+        </div>
+
+        <div class="grid-card feature-item" onclick="showPage('youtubeDownloaderPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M10 15l5.19-3L10 9v6m11.56-7.83c.13.47.22 1.1.28 1.9.07.8.1 1.49.1 2.09L22 12c0 2.19-.16 3.8-.44 4.83-.25.9-.83 1.48-1.73 1.73-.47.13-1.33.22-2.65.28-1.3.07-2.49.1-3.59.1L12 19c-4.19 0-6.8-.16-7.83-.44-.9-.25-1.48-.83-1.73-1.73-.13-.47-.22-1.1-.28-1.9-.07-.8-.1-1.49-.1-2.09L2 12c0-2.19.16-3.8.44-4.83.25-.9.83-1.48 1.73-1.73.47-.13 1.33-.22 2.65-.28 1.3-.07 2.49-.1 3.59-.1L12 5c4.19 0 6.8.16 7.83.44.9.25 1.48.83 1.73 1.73z"/></svg>
+          <span>YouTube</span>
+        </div>
+      </main>
+    </div>
+
+    <!-- ==================== MAKER MENU ==================== -->
+    <div id="makerMenuPage" class="page-section">
+      <button class="back-btn" onclick="showPage('homePage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Pilih Maker</h2>
+
+      <main class="menu-grid">
+        <div class="grid-card feature-item" onclick="showPage('bratMakerPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M5 4v3h5v12h3V7h5V4H5z"/></svg>
+          <span>Brat Generator</span>
+        </div>
+      </main>
+    </div>
+
+    <!-- ==================== STALK MENU ==================== -->
+    <div id="stalkMenuPage" class="page-section">
+      <button class="back-btn" onclick="showPage('homePage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Pilih Stalk</h2>
+
+      <main class="menu-grid">
+        <div class="grid-card feature-item" onclick="showPage('ffStalkPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 9 18.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+          <span>Free Fire</span>
+        </div>
+
+        <div class="grid-card feature-item" onclick="showPage('robloxStalkPage')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 10h-4v4h-4v-4H4v-4h4V5h4v4h4v4z"/></svg>
+          <span>Roblox</span>
+        </div>
+      </main>
+    </div>
+
+    <!-- ==================== LAINNYA MENU ==================== -->
+    <div id="lainnyaMenuPage" class="page-section">
+      <button class="back-btn" onclick="showPage('homePage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Fitur Lainnya</h2>
+
+      <div class="coming-soon">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 11.9 13 12.5 13 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+        <h3>Segera Hadir</h3>
+        <p>Fitur baru sedang dalam pengembangan. Pantau terus update selanjutnya!</p>
+      </div>
+    </div>
+
+    <!-- ==================== TIKTOK DOWNLOADER ==================== -->
+    <div id="tiktokDownloaderPage" class="page-section">
+      <button class="back-btn" onclick="showPage('downloaderMenuPage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">TikTok Downloader</h2>
+      
+      <div class="input-wrapper">
+        <input type="text" id="tiktokUrl" class="input-box" placeholder="Tempel URL TikTok di sini...">
+        <button class="paste-btn" onclick="pasteFromClipboard('tiktokUrl')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z"/></svg>
+          Tempel
+        </button>
+      </div>
+      
+      <button class="action-btn" onclick="fetchTikTok()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> Cari & Download
+      </button>
+
+      <div class="loader" id="loader">
+        <svg class="icon-svg spinner-svg" viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Memuat Data...
+      </div>
+
+      <div class="result-card" id="resultCard">
+        <div class="profile-header" id="tiktokProfileHeader"></div>
+        <div class="media-container" id="mediaBox"></div>
+        <div class="caption-text" id="captionText"></div>
+        <div class="dl-btn-group" id="downloadButtons"></div>
+      </div>
+    </div>
+
+    <!-- ==================== INSTAGRAM DOWNLOADER ==================== -->
+    <div id="igDownloaderPage" class="page-section">
+      <button class="back-btn" onclick="showPage('downloaderMenuPage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Instagram Downloader</h2>
+      
+      <div class="input-wrapper">
+        <input type="text" id="igUrl" class="input-box" placeholder="Tempel URL Instagram di sini...">
+        <button class="paste-btn" onclick="pasteFromClipboard('igUrl')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z"/></svg>
+          Tempel
+        </button>
+      </div>
+      
+      <button class="action-btn" onclick="fetchInstagram()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> Cari & Download
+      </button>
+
+      <div class="loader" id="igLoader">
+        <svg class="icon-svg spinner-svg" viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Memuat Data...
+      </div>
+
+      <div class="result-card" id="igResultCard">
+        <div class="media-container" id="igMediaBox"></div>
+        <div class="dl-btn-group" id="igDownloadButtons"></div>
+      </div>
+    </div>
+
+    <!-- ==================== YOUTUBE DOWNLOADER ==================== -->
+    <div id="youtubeDownloaderPage" class="page-section">
+      <button class="back-btn" onclick="showPage('downloaderMenuPage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">YouTube Downloader</h2>
+      
+      <div class="input-wrapper">
+        <input type="text" id="youtubeUrl" class="input-box" placeholder="Tempel URL YouTube di sini...">
+        <button class="paste-btn" onclick="pasteFromClipboard('youtubeUrl')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z"/></svg>
+          Tempel
+        </button>
+      </div>
+      
+      <button class="action-btn" onclick="fetchYouTube()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> Cari & Download
+      </button>
+
+      <div class="loader" id="youtubeLoader">
+        <svg class="icon-svg spinner-svg" viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Memuat Data...
+      </div>
+
+      <div class="result-card" id="youtubeResultCard">
+        <div class="media-container" id="ytThumbBox"></div>
+        <div class="caption-text" id="ytTitleBox"></div>
+        <div id="ytInfoBox" class="info-text"></div>
+        
+        <div class="dl-btn-group" id="ytDownloadButtons"></div>
+      </div>
+    </div>
+
+    <!-- ==================== BRAT GENERATOR ==================== -->
+    <div id="bratMakerPage" class="page-section">
+      <button class="back-btn" onclick="showPage('makerMenuPage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Brat Generator</h2>
+      
+      <div class="input-wrapper">
+        <input type="text" id="bratText" class="input-box" placeholder="Tulis teks Brat di sini...">
+        <button class="paste-btn" onclick="pasteFromClipboard('bratText')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z"/></svg>
+          Tempel
+        </button>
+      </div>
+      
+      <button class="action-btn" onclick="generateBrat()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M7.5 5.6L5 7l1.4-2.5L5 2l2.5 1.4L10 2 8.6 4.5 10 7 7.5 5.6zm12 9.8L17 14l1.4 2.5L17 19l2.5-1.4L22 19l-1.4-2.5L22 14l-2.5 1.4zM22 2l-2.5 1.4L17 2l1.4 2.5L17 7l2.5-1.4L22 7l-1.4-2.5L22 2zm-7.63 5.29c-.39-.39-1.02-.39-1.41 0L1.29 18.96c-.39.39-.39 1.02 0 1.41l2.34 2.34c.39.39 1.02.39 1.41 0L16.7 11.05c.39-.39.39-1.02 0-1.41l-2.33-2.35zm-1.03 5.49l-2.12-2.12 2.44-2.44 2.12 2.12-2.44 2.44z"/></svg> Buat Gambar
+      </button>
+
+      <div class="loader" id="bratLoader">
+        <svg class="icon-svg spinner-svg" viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Membuat Gambar...
+      </div>
+
+      <div class="result-card" id="bratResultCard">
+        <div class="media-container" id="bratMediaBox"></div>
+        <div class="dl-btn-group" id="bratDownloadButtons"></div>
+      </div>
+    </div>
+
+    <!-- ==================== STALK FREE FIRE ==================== -->
+    <div id="ffStalkPage" class="page-section">
+      <button class="back-btn" onclick="showPage('stalkMenuPage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Stalk Free Fire</h2>
+      
+      <div class="input-wrapper">
+        <input type="number" id="ffUid" class="input-box" placeholder="Masukkan UID Free Fire...">
+        <button class="paste-btn" onclick="pasteFromClipboard('ffUid')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z"/></svg>
+          Tempel
+        </button>
+      </div>
+      
+      <button class="action-btn" onclick="fetchFreeFire()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> Cek Akun
+      </button>
+
+      <div class="loader" id="ffLoader">
+        <svg class="icon-svg spinner-svg" viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Mengambil Data...
+      </div>
+
+      <div class="result-card" id="ffResultCard">
+        <div class="media-container" id="ffBannerBox"></div>
+        <div class="stalk-info-list" id="ffDetailsBox"></div>
+      </div>
+    </div>
+
+    <!-- ==================== STALK ROBLOX ==================== -->
+    <div id="robloxStalkPage" class="page-section">
+      <button class="back-btn" onclick="showPage('stalkMenuPage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Stalk Roblox</h2>
+      
+      <div class="input-wrapper">
+        <input type="text" id="robloxUsername" class="input-box" placeholder="Masukkan Username Roblox...">
+        <button class="paste-btn" onclick="pasteFromClipboard('robloxUsername')">
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z"/></svg>
+          Tempel
+        </button>
+      </div>
+      
+      <button class="action-btn" onclick="fetchRoblox()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> Cek Akun
+      </button>
+
+      <div class="loader" id="robloxLoader">
+        <svg class="icon-svg spinner-svg" viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg> Mengambil Data...
+      </div>
+
+      <div class="result-card" id="robloxResultCard">
+        <div class="media-container" id="robloxAvatarBox"></div>
+        <div class="stalk-info-list" id="robloxDetailsBox"></div>
+      </div>
+    </div>
+
+    <!-- ==================== CONTACT ME PAGE ==================== -->
+    <div id="contactPage" class="page-section">
+      <button class="back-btn" onclick="showPage('homePage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Contact Me</h2>
+
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div class="profile-avatar" style="margin: 0 auto 12px;">
+          <div class="avatar-spinner" id="avatarSpinnerContact"></div>
+          <img src="" 
+               alt="Profile"
+               id="profileImageContact"
+               loading="eager"
+               onload="this.classList.add('loaded'); document.getElementById('avatarSpinnerContact').classList.add('hide');">
+        </div>
+      </div>
+
+      <p class="contact-desc" style="text-align: center;">
+        Ada pertanyaan, kolaborasi, atau butuh bantuan?<br>Langsung chat saya via WhatsApp!
+      </p>
+
+      <a href="https://wa.me/6281553801021?text=Halo%20Fepi%20Tools%2C%20saya%20mau%20tanya..." 
+         target="_blank" 
+         rel="noopener noreferrer"
+         class="action-btn wa-btn" 
+         style="text-decoration: none;">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M16.75 13.96c-.25-.13-1.47-.72-1.7-.81-.22-.08-.39-.13-.56.12-.17.25-.66.81-.81.98-.15.17-.31.19-.56.07-.25-.13-1.07-.39-2.04-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.22.25-.86.84-.86 2.05 0 1.21.88 2.38 1 2.54.13.17 1.73 2.64 4.19 3.7.59.25 1.04.41 1.4.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.17-.48-.3zM12 2a10 10 0 0 0-10 10c0 1.77.46 3.45 1.28 4.92L2 22l5.25-1.38A9.94 9.94 0 0 0 12 22a10 10 0 0 0 10-10A10 10 0 0 0 12 2z"/></svg>
+        Chat via WhatsApp
+      </a>
+
+      <div class="contact-info-card">
+        <div class="label">📱 Nomor WhatsApp</div>
+        <div class="value">0815-5380-1021</div>
+      </div>
+    </div>
+
+    <!-- ==================== REPORT BUG PAGE ==================== -->
+    <div id="reportBugPage" class="page-section">
+      <button class="back-btn" onclick="showPage('homePage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Report Bug</h2>
+
+      <p class="contact-desc">
+        Laporkan bug/error yang kamu temukan. Kami akan segera perbaiki!
+      </p>
+
+      <label class="form-label">Pilih Fitur yang Bug</label>
+      <select id="bugFeature" class="form-select">
+        <option value="">-- Pilih Fitur --</option>
+        <option value="YouTube Downloader">YouTube Downloader</option>
+        <option value="TikTok Downloader">TikTok Downloader</option>
+        <option value="Instagram Downloader">Instagram Downloader</option>
+        <option value="Brat Generator">Brat Generator</option>
+        <option value="Stalk Free Fire">Stalk Free Fire</option>
+        <option value="Stalk Roblox">Stalk Roblox</option>
+        <option value="Contact Me">Contact Me</option>
+        <option value="Report Bug">Report Bug</option>
+        <option value="Request Fitur">Request Fitur</option>
+        <option value="Lainnya">Lainnya</option>
+      </select>
+
+      <label class="form-label">Alasan / Detail Bug</label>
+      <textarea id="bugReason" class="form-textarea" placeholder="Jelaskan bug yang kamu temukan... Contoh: 'Ketika klik download, muncul error 404'"></textarea>
+
+      <button class="action-btn wa-btn" onclick="sendBugReport()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        Send Report
+      </button>
+    </div>
+
+    <!-- ==================== REQUEST FITUR PAGE ==================== -->
+    <div id="requestFeaturePage" class="page-section">
+      <button class="back-btn" onclick="showPage('homePage')">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Kembali
+      </button>
+
+      <h2 class="page-title">Request Fitur</h2>
+
+      <p class="contact-desc">
+        Punya ide fitur baru? Request di sini, nanti saya usahakan buatkan!
+      </p>
+
+      <label class="form-label">Jelaskan Apa Yang Mau Di Request</label>
+      <textarea id="requestText" class="form-textarea" placeholder="Contoh: 'Tolong tambahin downloader YouTube' atau 'Bikin fitur AI Chat'..."></textarea>
+
+      <button class="action-btn wa-btn" onclick="sendFeatureRequest()">
+        <svg class="icon-svg" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        Send Request
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwC2K0zPi_9POOlRNX8Dy-JBL1yWH8M-CqYW49A7yn0s9jgXqfscyb_oqB6uwQvVzjC/exec';
+    const WA_NUMBER = '6281553801021';
+
+    /* ==================== THEME TOGGLE ==================== */
+    // Prioritas: (1) localStorage (user pilih manual), (2) prefers-color-scheme (sistem)
+    function applyStoredTheme() {
+      const saved = localStorage.getItem('fepi_theme');
+      if (saved === 'dark' || saved === 'light') {
+        document.documentElement.setAttribute('data-theme', saved);
+      }
+      // Kalau nggak ada saved → biarkan default (auto via media query)
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      let next;
+
+      // Kalau belum ada data-theme (mode auto), tentukan kebalikannya
+      if (!current) {
+        const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        next = systemDark ? 'light' : 'dark';
+      } else {
+        next = current === 'dark' ? 'light' : 'dark';
+      }
+
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('fepi_theme', next);
+      console.log('Tema diubah ke:', next.toUpperCase());
+    }
+
+    // Terapkan tema tersimpan SEBELUM render (anti flash)
+    applyStoredTheme();
+
+    /* ==================== LOADER ==================== */
+    const MIN_LOADER_DURATION = 2200;
+    let photoLoaded = false;
+    let pageLoaded = false;
+    const startTime = Date.now();
+
+    function setLoaderStatus(text) {
+      const el = document.getElementById('loaderStatus');
+      if (el) el.textContent = text;
+    }
+
+    function checkLoaderDone() {
+      const elapsed = Date.now() - startTime;
+      const minTimePassed = elapsed >= MIN_LOADER_DURATION;
+
+      if (photoLoaded && pageLoaded && minTimePassed) {
+        bounceLoaderOut();
+      } else if (photoLoaded && pageLoaded && !minTimePassed) {
+        setTimeout(() => checkLoaderDone(), MIN_LOADER_DURATION - elapsed);
+      }
+    }
+
+    function bounceLoaderOut() {
+      const loader = document.getElementById('pageLoader');
+      const app = document.getElementById('appContainer');
+
+      if (!loader || !app) return;
+
+      // Tampilkan app di belakang loader dulu
+      app.classList.add('ready');
+
+      // Tambah class bounce-out → loader mantul ke bawah dengan smooth
+      loader.classList.add('bounce-out');
+
+      // Setelah loader hilang (1s bounce + 0.4s delay), mulai animasi masuk
+      setTimeout(() => {
+        loader.style.display = 'none';
+        animateElements();
+      }, 1200);
+    }
+
+    window.addEventListener('load', function() {
+      pageLoaded = true;
+      setLoaderStatus('Menyiapkan tampilan...');
+      checkLoaderDone();
+    });
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const img = document.getElementById('profileImage');
+      if (!img) {
+        photoLoaded = true;
+        checkLoaderDone();
+        return;
+      }
+
+      setLoaderStatus('Memuat foto profil...');
+
+      if (img.complete && img.naturalWidth > 0) {
+        photoLoaded = true;
+        checkLoaderDone();
+      } else {
+        img.addEventListener('load', function() {
+          photoLoaded = true;
+          setLoaderStatus('Foto dimuat!');
+          checkLoaderDone();
+        });
+        img.addEventListener('error', function() {
+          photoLoaded = true;
+          setLoaderStatus('Foto gagal dimuat, lanjut...');
+          checkLoaderDone();
+        });
+      }
+
+      setTimeout(() => {
+        if (!photoLoaded) {
+          photoLoaded = true;
+          setLoaderStatus('Melanjutkan...');
+          checkLoaderDone();
+        }
+      }, 5000);
+    });
+
+    function animateElements() {
+      const order = [
+        'anim-header',
+        'anim-avatar',
+        'anim-name',
+        'anim-link1',
+        'linkBioData',
+        'anim-link3',
+        'anim-stat1',
+        'anim-stat2',
+        'anim-card1',
+        'anim-card2',
+        'anim-card3',
+        'anim-card4',
+        'anim-footer'
+      ];
+
+      // Delay antar elemen — lebih lambat biar rapi
+      const DELAY_PER_ITEM = 420;
+
+      order.forEach((id, index) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        setTimeout(() => {
+          el.classList.add('show');
+        }, index * DELAY_PER_ITEM);
+      });
+    }
+
+    /* ==================== KONTEN LAINNYA ==================== */
+    const ICONS = {
+      download: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>`,
+      image: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`,
+      heart: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
+      comment: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>`,
+      share: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>`,
+      play: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`,
+      music: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`,
+      layers: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27-7.38 5.74zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16z"/></svg>`,
+      prev: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>`,
+      next: `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>`
+    };
+
+    async function fetchTikTok() {
+      const urlInput = document.getElementById('tiktokUrl').value.trim();
+      const loader = document.getElementById('loader');
+      const resultCard = document.getElementById('resultCard');
+      const mediaBox = document.getElementById('mediaBox');
+      const captionText = document.getElementById('captionText');
+      const downloadButtons = document.getElementById('downloadButtons');
+      const profileHeader = document.getElementById('tiktokProfileHeader');
+
+      if (!urlInput) { alert('Harap masukkan URL TikTok!'); return; }
+
+      loader.style.display = 'block';
+      resultCard.style.display = 'none';
+      mediaBox.innerHTML = '';
+      downloadButtons.innerHTML = '';
+      profileHeader.innerHTML = '';
+
+      try {
+        const apiUrl = `https://www.tikwm.com/api/?url=${encodeURIComponent(urlInput)}`;
+        const res = await fetch(apiUrl);
+        const json = await res.json();
+
+        if (json.code !== 0 || !json.data) throw new Error(json.msg || 'Data tidak ditemukan');
+
+        const data = json.data;
+        captionText.innerText = data.title || 'Tanpa Judul';
+
+        const author = data.author || {};
+        const avatarUrl = author.avatar || '';
+        const displayName = author.nickname || 'TikTok User';
+        const username = author.unique_id ? '@' + author.unique_id : '';
+
+        profileHeader.innerHTML = `
+          <div class="profile-header-avatar">
+            ${avatarUrl ? `<img src="${avatarUrl}" alt="Avatar" onerror="this.parentNode.innerHTML='';">` : ''}
+          </div>
+          <div class="profile-header-info">
+            <div class="profile-header-name">${displayName}</div>
+            <div class="profile-header-username">${username || '-'}</div>
+          </div>
+        `;
+
+        const infoHtml = `
+          <div class="info-text">
+            <div class="info-item">${ICONS.heart}<span>${data.digg_count || 0}</span></div>
+            <div class="info-item">${ICONS.comment}<span>${data.comment_count || 0}</span></div>
+            <div class="info-item">${ICONS.share}<span>${data.share_count || 0}</span></div>
+            <div class="info-item">${ICONS.play}<span>${data.play_count || 0}</span></div>
+          </div>
+        `;
+
+        const isSlide = data.images && Array.isArray(data.images) && data.images.length > 0;
+
+        if (isSlide) {
+          const slideUrls = data.images;
+          let carouselHtml = `
+            <div class="carousel-wrapper">
+              <div class="slide-carousel" id="carouselScroll">
+                ${slideUrls.map(url => `<img src="${url}" alt="Slide">`).join('')}
+              </div>
+              <div class="slide-badge">${slideUrls.length} Slide</div>
+              <div class="carousel-nav">
+                <button class="carousel-btn" id="carouselPrevBtn" onclick="carouselPrev()">${ICONS.prev} Prev</button>
+                <div class="carousel-counter" id="carouselCounter">1 / ${slideUrls.length}</div>
+                <button class="carousel-btn" id="carouselNextBtn" onclick="carouselNext()">Next ${ICONS.next}</button>
+              </div>
+            </div>
+          `;
+          mediaBox.innerHTML = carouselHtml;
+
+          let btns = infoHtml;
+          btns += `<button class="dl-btn primary" onclick="downloadAllSlides()">${ICONS.layers} Download Semua Slide (${slideUrls.length})</button>`;
+          slideUrls.forEach((url, idx) => {
+            btns += `<button class="dl-btn" onclick="downloadFile('${url}', 'tiktok_slide_${data.id || 'x'}_${idx+1}.jpg')">${ICONS.image} Download Slide ${idx+1}</button>`;
+          });
+          if (data.music) {
+            btns += `<button class="dl-btn success" onclick="downloadFile('${data.music}', 'tiktok_audio_${data.id || 'audio'}.mp3')">${ICONS.music} Download Audio</button>`;
+          }
+          downloadButtons.innerHTML = btns;
+          window._tiktokSlides = slideUrls;
+          window._tiktokItemId = data.id || 'slide';
+          setTimeout(initCarousel, 100);
+        } else {
+          const videoUrl = data.play || data.wmplay;
+          const coverUrl = data.cover || data.origin_cover || '';
+          if (!videoUrl) throw new Error('Link video tidak ditemukan');
+          mediaBox.innerHTML = `<video controls poster="${coverUrl}" src="${videoUrl}"></video>`;
+
+          let btns = infoHtml;
+          btns += `<button class="dl-btn primary" onclick="downloadFile('${videoUrl}', 'tiktok_${data.id || 'video'}.mp4')">${ICONS.download} Download Video HD</button>`;
+          if (data.music) {
+            btns += `<button class="dl-btn success" onclick="downloadFile('${data.music}', 'tiktok_audio_${data.id || 'audio'}.mp3')">${ICONS.music} Download Audio</button>`;
+          }
+          downloadButtons.innerHTML = btns;
+        }
+
+        resultCard.style.display = 'block';
+      } catch (error) {
+        console.error(error);
+        alert('Gagal mengambil data TikTok. Pastikan URL benar!');
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    async function downloadAllSlides() {
+      const slides = window._tiktokSlides || [];
+      const itemId = window._tiktokItemId || 'slide';
+      if (slides.length === 0) return;
+      for (let i = 0; i < slides.length; i++) {
+        await downloadFile(slides[i], `tiktok_slide_${itemId}_${i+1}.jpg`);
+        await new Promise(r => setTimeout(r, 800));
+      }
+    }
+
+    async function fetchYouTube() {
+      const urlInput = document.getElementById('youtubeUrl').value.trim();
+      const loader = document.getElementById('youtubeLoader');
+      const resultCard = document.getElementById('youtubeResultCard');
+      const thumbBox = document.getElementById('ytThumbBox');
+      const titleBox = document.getElementById('ytTitleBox');
+      const infoBox = document.getElementById('ytInfoBox');
+      const downloadButtons = document.getElementById('ytDownloadButtons');
+
+      if (!urlInput) { alert('Harap masukkan URL YouTube!'); return; }
+
+      loader.style.display = 'block';
+      resultCard.style.display = 'none';
+      thumbBox.innerHTML = '';
+      downloadButtons.innerHTML = '';
+
+      try {
+        const [mp4Res, mp3Res] = await Promise.all([
+          fetch(`https://api.ikyyxd.my.id/download/ytmp4?q=${encodeURIComponent(urlInput)}`).then(r => r.json()).catch(() => null),
+          fetch(`https://api.ikyyxd.my.id/download/ytmp3?url=${encodeURIComponent(urlInput)}`).then(r => r.json()).catch(() => null)
+        ]);
+
+        if (!mp4Res?.status && !mp3Res?.status) throw new Error('Gagal ambil data. Cek URL atau coba lagi.');
+
+        const info = mp4Res?.result || mp3Res?.result || {};
+        const title = info.title || 'Tanpa Judul';
+        const thumbnail = info.thumbnail || (mp3Res?.result?.thumbnail) || '';
+        const duration = info.duration || mp3Res?.result?.duration || null;
+        const videoId = info.id || '';
+
+        if (thumbnail) thumbBox.innerHTML = `<img src="${thumbnail}" alt="Thumbnail">`;
+        titleBox.innerText = title;
+
+        let infoHtml = '';
+        if (duration) infoHtml += `<div class="info-item">${ICONS.play}<span>${formatDuration(duration)}</span></div>`;
+        if (videoId) infoHtml += `<div class="info-item">${ICONS.layers}<span>${videoId}</span></div>`;
+        infoBox.innerHTML = infoHtml;
+
+        let btns = '';
+        const safeTitle = title.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '_');
+
+        const videoUrl = mp4Res?.result?.VideoUrl?.url;
+        if (videoUrl) {
+          btns += `<button class="dl-btn primary" onclick="downloadFile('${videoUrl}', 'yt_${safeTitle}.mp4')">${ICONS.download} Download Video (MP4)</button>`;
+        }
+
+        const audioUrl = mp3Res?.result?.audio?.url;
+        const audioQuality = mp3Res?.result?.audio?.quality || 'audio';
+        if (audioUrl) {
+          btns += `<button class="dl-btn success" onclick="downloadFile('${audioUrl}', 'yt_${safeTitle}.webm')">${ICONS.music} Download Audio (${audioQuality})</button>`;
+        }
+
+        if (thumbnail) {
+          btns += `<button class="dl-btn" onclick="downloadFile('${thumbnail}', 'yt_thumbnail_${videoId}.jpg')">${ICONS.image} Download Thumbnail</button>`;
+        }
+
+        downloadButtons.innerHTML = btns || '<div class="stalk-info-item"><span class="value">Tidak ada link download</span></div>';
+        resultCard.style.display = 'block';
+      } catch (error) {
+        console.error(error);
+        alert('Gagal: ' + error.message);
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    function formatDuration(seconds) {
+      seconds = parseInt(seconds) || 0;
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      return `${m}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateTotalFeatures() {
+      const totalFeatures = document.querySelectorAll('.feature-item').length;
+      const el = document.getElementById('totalFeaturesCount');
+      if (el) el.innerText = totalFeatures + '+';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateTotalFeatures();
+      initVisitorTracking();
+    });
+
+    function generateFingerprint() {
+      const cached = localStorage.getItem('fepi_visitor_id');
+      if (cached) return cached;
+      const data = [
+        navigator.userAgent, navigator.language,
+        screen.width + 'x' + screen.height, screen.colorDepth,
+        new Date().getTimezoneOffset(), navigator.hardwareConcurrency || 0,
+        navigator.platform || ''
+      ].join('|');
+      let hash = 0;
+      for (let i = 0; i < data.length; i++) {
+        const chr = data.charCodeAt(i);
+        hash = ((hash << 5) - hash) + chr;
+        hash |= 0;
+      }
+      const id = 'fepi_' + Math.abs(hash).toString(36) + '_' + Date.now().toString(36);
+      localStorage.setItem('fepi_visitor_id', id);
+      return id;
+    }
+
+    function detectDevice() {
+      const ua = navigator.userAgent;
+      let device = 'Unknown';
+      let os = 'Unknown';
+      let browser = 'Unknown';
+      const devicePatterns = [
+        { pattern: /iPhone/i, name: 'iPhone' }, { pattern: /iPad/i, name: 'iPad' },
+        { pattern: /Samsung|SM-/i, name: 'Samsung' }, { pattern: /Redmi\s?(\w+)?/i, name: 'Redmi' },
+        { pattern: /POCO\s?(\w+)?/i, name: 'POCO' }, { pattern: /Xiaomi|Mi\s?\d|M\d{4}/i, name: 'Xiaomi' },
+        { pattern: /Oppo|CPH\d+/i, name: 'Oppo' }, { pattern: /Vivo|V\d{4}/i, name: 'Vivo' },
+        { pattern: /Realme|RMX\d+/i, name: 'Realme' }, { pattern: /Infinix/i, name: 'Infinix' },
+        { pattern: /Tecno/i, name: 'Tecno' }, { pattern: /Itel/i, name: 'Itel' },
+        { pattern: /Asus|ASUS_/i, name: 'Asus' }, { pattern: /Huawei|HUAWEI/i, name: 'Huawei' },
+        { pattern: /Nokia/i, name: 'Nokia' }, { pattern: /OnePlus|ONEPLUS/i, name: 'OnePlus' },
+        { pattern: /Pixel/i, name: 'Google Pixel' }, { pattern: /Macintosh|Mac OS X/i, name: 'Mac' },
+        { pattern: /Windows/i, name: 'Windows PC' }, { pattern: /Linux/i, name: 'Linux PC' }
+      ];
+      for (const { pattern, name } of devicePatterns) {
+        if (pattern.test(ua)) { device = name; break; }
+      }
+      const modelMatch = ua.match(/;\s*([A-Z0-9][A-Za-z0-9\s\-_]{2,30})\s*(Build|\))/);
+      if (modelMatch && modelMatch[1]) {
+        const model = modelMatch[1].trim();
+        if (model.length > 3 && !model.includes('Android') && !model.includes('wv')) device = model;
+      }
+      if (/Android/i.test(ua)) {
+        const match = ua.match(/Android\s([\d.]+)/);
+        os = 'Android ' + (match ? match[1] : '');
+      } else if (/iPhone|iPad|iPod/i.test(ua)) {
+        const match = ua.match(/OS\s([\d_]+)/);
+        os = 'iOS ' + (match ? match[1].replace(/_/g, '.') : '');
+      } else if (/Windows NT 10/i.test(ua)) os = 'Windows 10/11';
+      else if (/Mac OS X/i.test(ua)) os = 'macOS';
+      else if (/Linux/i.test(ua)) os = 'Linux';
+
+      if (/Edg\//i.test(ua)) browser = 'Edge';
+      else if (/OPR\/|Opera/i.test(ua)) browser = 'Opera';
+      else if (/SamsungBrowser/i.test(ua)) browser = 'Samsung Internet';
+      else if (/Chrome\//i.test(ua) && !/Edg\//i.test(ua)) browser = 'Chrome';
+      else if (/Safari\//i.test(ua) && !/Chrome/i.test(ua)) browser = 'Safari';
+      else if (/Firefox\//i.test(ua)) browser = 'Firefox';
+
+      return { device, os, browser };
+    }
+
+    async function fetchLocation() {
+      try {
+        const position = await new Promise((resolve, reject) => {
+          if (!navigator.geolocation) {
+            reject(new Error('Geolocation tidak didukung browser'));
+            return;
+          }
+
+          navigator.geolocation.getCurrentPosition(
+            (pos) => resolve(pos),
+            (err) => reject(err),
+            {
+              enableHighAccuracy: true,
+              timeout: 15000,
+              maximumAge: 0
+            }
+          );
+        });
+
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
+
+        let location = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        let city = '-';
+        let region = '-';
+        let country = '-';
+
+        try {
+          const geoRes = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=id`
+          );
+          if (geoRes.ok) {
+            const geoData = await geoRes.json();
+            city = geoData.city || geoData.locality || '-';
+            region = geoData.principalSubdivision || '-';
+            country = geoData.countryName || '-';
+            location = [city, region, country].filter(x => x && x !== '-').join(', ');
+          }
+        } catch (e) {
+          console.warn('Reverse geocoding gagal:', e);
+        }
+
+        return {
+          ip: '-',
+          location: location || '-',
+          city: city,
+          region: region,
+          country: country,
+          lat: lat,
+          lon: lon,
+          accuracy: accuracy,
+          source: 'gps'
+        };
+
+      } catch (err) {
+        console.warn('GPS gagal / ditolak:', err.message);
+
+        try {
+          const res = await fetch('https://ipapi.co/json/');
+          if (res.ok) {
+            const data = await res.json();
+            const location = [data.city, data.region, data.country_name].filter(Boolean).join(', ');
+            return {
+              ip: data.ip || '-',
+              location: location || '-',
+              city: data.city || '-',
+              region: data.region || '-',
+              country: data.country_name || '-',
+              lat: data.latitude || null,
+              lon: data.longitude || null,
+              accuracy: null,
+              source: 'ip'
+            };
+          }
+        } catch (e) {
+          console.warn('IP fallback gagal juga:', e);
+        }
+
+        return {
+          ip: '-', location: '-', city: '-', region: '-', country: '-',
+          lat: null, lon: null, accuracy: null, source: 'unknown'
+        };
+      }
+    }
+
+    async function initVisitorTracking() {
+      const visitorCountEl = document.getElementById('visitorCount');
+      const visitorLoadingEl = document.getElementById('visitorLoading');
+      const profileNameEl = document.getElementById('profileName');
+      
+      try {
+        const statsRes = await fetch(`${API_URL}?action=stats&t=${Date.now()}`, { cache: 'no-store' });
+        const statsData = await statsRes.json();
+        
+        if (statsData.status) {
+          if (visitorCountEl) {
+            visitorCountEl.innerText = Number(statsData.totalVisitors || 0).toLocaleString('id-ID');
+            visitorCountEl.style.display = 'block';
+          }
+          if (visitorLoadingEl) {
+            visitorLoadingEl.classList.add('hide');
+          }
+          if (statsData.profile) {
+            if (profileNameEl && statsData.profile.name) profileNameEl.innerText = statsData.profile.name;
+            if (statsData.profile.photo) {
+              const photoUrl = statsData.profile.photo;
+              const imgHome = document.getElementById('profileImage');
+              if (imgHome) { imgHome.classList.remove('loaded'); imgHome.src = photoUrl; }
+              const imgContact = document.getElementById('profileImageContact');
+              if (imgContact) { imgContact.classList.remove('loaded'); imgContact.src = photoUrl; }
+            }
+            const tiktokBtn = document.getElementById('linkTiktok');
+            const bioDataBtn = document.getElementById('linkBioData');
+            const waBtn = document.getElementById('linkWhatsapp');
+            if (tiktokBtn && statsData.profile.tiktok) tiktokBtn.href = statsData.profile.tiktok;
+            if (bioDataBtn && statsData.profile.store) bioDataBtn.href = statsData.profile.store;
+            if (waBtn && statsData.profile.whatsapp) waBtn.href = statsData.profile.whatsapp;
+          }
+        }
+        
+        const fingerprint = generateFingerprint();
+        const deviceInfo = detectDevice();
+        const locationInfo = await fetchLocation();
+        
+        const payload = {
+          fingerprint: fingerprint,
+          name: 'Visitor',
+          device: deviceInfo.device,
+          os: deviceInfo.os,
+          browser: deviceInfo.browser,
+          location: locationInfo.location,
+          ip: locationInfo.ip,
+          city: locationInfo.city,
+          region: locationInfo.region,
+          country: locationInfo.country,
+          lat: locationInfo.lat,
+          lon: locationInfo.lon,
+          accuracy: locationInfo.accuracy,
+          locationSource: locationInfo.source
+        };
+        
+        await fetch(API_URL, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+        
+        setTimeout(async () => {
+          try {
+            const refreshRes = await fetch(`${API_URL}?action=stats&t=${Date.now()}`, { cache: 'no-store' });
+            const refreshData = await refreshRes.json();
+            if (refreshData.status && visitorCountEl) {
+              visitorCountEl.innerText = Number(refreshData.totalVisitors || 0).toLocaleString('id-ID');
+            }
+          } catch (e) {}
+        }, 2000);
+      } catch (err) {
+        console.error('Tracking error:', err);
+        if (visitorCountEl) {
+          visitorCountEl.innerText = '0';
+          visitorCountEl.style.display = 'block';
+        }
+        if (visitorLoadingEl) {
+          visitorLoadingEl.classList.add('hide');
+        }
+      }
+    }
+
+    function sendBugReport() {
+      const fitur = document.getElementById('bugFeature').value.trim();
+      const alasan = document.getElementById('bugReason').value.trim();
+      if (!fitur) { alert('⚠️ Pilih dulu fitur yang bug!'); return; }
+      if (!alasan) { alert('⚠️ Alasan/detail bug tidak boleh kosong!'); return; }
+
+      const deviceInfo = detectDevice();
+      const pesan = `🐛 *REPORT BUG - FEPI TOOLS*\n\n📌 *Fitur:* ${fitur}\n\n📝 *Alasan:*\n${alasan}\n\n━━━━━━━━━━━━━━━\n📅 ${new Date().toLocaleString('id-ID')}\n📱 ${deviceInfo.device} • ${deviceInfo.os}\n🌐 Browser: ${deviceInfo.browser}`;
+      const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(pesan)}`;
+      window.open(waUrl, '_blank');
+      setTimeout(() => {
+        document.getElementById('bugFeature').value = '';
+        document.getElementById('bugReason').value = '';
+      }, 1000);
+    }
+
+    function sendFeatureRequest() {
+      const request = document.getElementById('requestText').value.trim();
+      if (!request) { alert('⚠️ Jelaskan dulu fitur yang mau di-request!'); return; }
+
+      const deviceInfo = detectDevice();
+      const pesan = `💡 *REQUEST FITUR - FEPI TOOLS*\n\n📝 *Request:*\n${request}\n\n━━━━━━━━━━━━━━━\n📅 ${new Date().toLocaleString('id-ID')}\n📱 ${deviceInfo.device} • ${deviceInfo.os}\n🌐 Browser: ${deviceInfo.browser}`;
+      const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(pesan)}`;
+      window.open(waUrl, '_blank');
+      setTimeout(() => { document.getElementById('requestText').value = ''; }, 1000);
+    }
+
+    async function pasteFromClipboard(inputId) {
+      const input = document.getElementById(inputId);
+      const btn = event.currentTarget;
+      if (!input) return;
+
+      let text = '';
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          text = await navigator.clipboard.readText();
+          console.log('Clipboard API berhasil:', text);
+        }
+      } catch (err) {
+        console.warn('Clipboard API gagal:', err.message);
+      }
+
+      if (!text) {
+        try {
+          text = prompt('📋 Tempel link di sini:\n\n(Copy link dulu di app lain, lalu paste di kotak ini)') || '';
+        } catch (e) {
+          console.warn('Prompt gagal:', e);
+        }
+      }
+
+      text = text.trim();
+      if (!text) {
+        alert('Clipboard kosong / tidak ada teks yang di-paste.');
+        return;
+      }
+
+      const detected = detectPlatform(text);
+      const expected = getExpectedPlatform(inputId);
+
+      if (!detected) {
+        if (expected) {
+          alert(`❌ Link tidak dikenali!\n\nInput "${getInputLabel(inputId)}" hanya menerima link ${getPlatformLabel(expected)}.`);
+          return;
+        }
+      } else if (expected && detected !== expected) {
+        alert(`❌ Link ${getPlatformLabel(detected)} tidak bisa dipakai di ${getInputLabel(inputId)}!\n\nSilakan paste di input ${getPlatformLabel(detected)}.`);
+        return;
+      }
+
+      input.value = text;
+      input.focus();
+
+      if (btn) {
+        const originalHtml = btn.innerHTML;
+        btn.classList.add('success');
+        btn.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> OK`;
+        setTimeout(() => {
+          btn.classList.remove('success');
+          btn.innerHTML = originalHtml;
+        }, 1500);
+      }
+    }
+
+    function detectPlatform(url) {
+      const lower = url.toLowerCase();
+      if (lower.includes('youtube.com') || lower.includes('youtu.be')) return 'youtube';
+      if (lower.includes('tiktok.com') || lower.includes('vt.tiktok.com') || lower.includes('vm.tiktok.com')) return 'tiktok';
+      if (lower.includes('instagram.com') || lower.includes('instagr.am') || lower.includes('ig.me')) return 'instagram';
+      if (/^\d{6,15}$/.test(lower)) return 'freefire';
+      if (/^[a-zA-Z0-9_]{3,20}$/.test(url)) return 'roblox';
+      return null;
+    }
+
+    function getExpectedPlatform(inputId) {
+      const map = {
+        'youtubeUrl': 'youtube', 'tiktokUrl': 'tiktok', 'igUrl': 'instagram',
+        'ffUid': 'freefire', 'robloxUsername': 'roblox', 'bratText': null
+      };
+      return map[inputId] || null;
+    }
+
+    function getPlatformLabel(platform) {
+      const labels = {
+        'youtube': 'YouTube', 'tiktok': 'TikTok', 'instagram': 'Instagram',
+        'freefire': 'Free Fire', 'roblox': 'Roblox'
+      };
+      return labels[platform] || platform;
+    }
+
+    function getInputLabel(inputId) {
+      const labels = {
+        'youtubeUrl': 'YouTube Downloader', 'tiktokUrl': 'TikTok Downloader',
+        'igUrl': 'Instagram Downloader', 'ffUid': 'Stalk Free Fire',
+        'robloxUsername': 'Stalk Roblox', 'bratText': 'Brat Generator'
+      };
+      return labels[inputId] || inputId;
+    }
+
+    let _carouselIndex = 0;
+    let _carouselTotal = 0;
+    let _carouselEl = null;
+
+    function carouselPrev() { if (_carouselIndex > 0) { _carouselIndex--; _scrollToSlide(); } }
+    function carouselNext() { if (_carouselIndex < _carouselTotal - 1) { _carouselIndex++; _scrollToSlide(); } }
+    function _scrollToSlide() {
+      if (!_carouselEl) return;
+      const slideWidth = _carouselEl.clientWidth;
+      _carouselEl.scrollTo({ left: slideWidth * _carouselIndex, behavior: 'smooth' });
+      _updateCarouselUI();
+    }
+    function _updateCarouselUI() {
+      const counter = document.getElementById('carouselCounter');
+      const prevBtn = document.getElementById('carouselPrevBtn');
+      const nextBtn = document.getElementById('carouselNextBtn');
+      if (counter) counter.innerText = `${_carouselIndex + 1} / ${_carouselTotal}`;
+      if (prevBtn) prevBtn.disabled = _carouselIndex === 0;
+      if (nextBtn) nextBtn.disabled = _carouselIndex === _carouselTotal - 1;
+    }
+    function initCarousel() {
+      _carouselEl = document.getElementById('carouselScroll');
+      if (!_carouselEl) return;
+      _carouselIndex = 0;
+      _carouselTotal = _carouselEl.children.length;
+      _updateCarouselUI();
+      _carouselEl.addEventListener('scroll', () => {
+        const slideWidth = _carouselEl.clientWidth;
+        const newIndex = Math.round(_carouselEl.scrollLeft / slideWidth);
+        if (newIndex !== _carouselIndex) { _carouselIndex = newIndex; _updateCarouselUI(); }
+      });
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+    }
+
+    function toggleMenu() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.style.display = 'none';
+      } else {
+        sidebar.classList.add('open');
+        overlay.style.display = 'block';
+      }
+    }
+
+    function formatDate(isoString) {
+      if (!isoString || isoString === 'Tidak tersedia') return '-';
+      const date = new Date(isoString);
+      if (isNaN(date.getTime())) return isoString;
+      return date.toLocaleString('id-ID', {
+        day: 'numeric', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    async function fetchInstagram() {
+      const urlInput = document.getElementById('igUrl').value.trim();
+      const loader = document.getElementById('igLoader');
+      const resultCard = document.getElementById('igResultCard');
+      const mediaBox = document.getElementById('igMediaBox');
+      const downloadButtons = document.getElementById('igDownloadButtons');
+
+      if (!urlInput) { alert('Harap masukkan URL Instagram!'); return; }
+
+      loader.style.display = 'block';
+      resultCard.style.display = 'none';
+      mediaBox.innerHTML = '';
+      downloadButtons.innerHTML = '';
+
+      const apiUrl = `https://api.ikyyxd.my.id/download/instagram?apikey=kyzz&query=${encodeURIComponent(urlInput)}`;
+
+      try {
+        const res = await fetch(apiUrl);
+        const json = await res.json();
+        if (!json.status || !json.result || !json.result.download_urls) throw new Error('Data tidak ditemukan');
+
+        const uniqueUrls = [...new Set(json.result.download_urls)];
+        if (uniqueUrls.length === 0) throw new Error('Media tidak ditemukan');
+
+        const firstUrl = uniqueUrls[0];
+        const isVideo = firstUrl.includes('.mp4') || firstUrl.includes('video');
+        const isCarousel = uniqueUrls.length > 1;
+
+        if (isVideo && !isCarousel) {
+          mediaBox.innerHTML = `<video controls src="${uniqueUrls[0]}"></video>`;
+          downloadButtons.innerHTML = `<button class="dl-btn primary" onclick="downloadFile('${uniqueUrls[0]}', 'instagram_video.mp4')">${ICONS.download} Download Video</button>`;
+        } else if (!isVideo && !isCarousel) {
+          mediaBox.innerHTML = `<img src="${uniqueUrls[0]}" alt="Instagram Photo">`;
+          downloadButtons.innerHTML = `<button class="dl-btn primary" onclick="downloadFile('${uniqueUrls[0]}', 'instagram_photo.jpg')">${ICONS.download} Download Foto</button>`;
+        } else {
+          let carouselItems = '';
+          uniqueUrls.forEach(url => {
+            const itemIsVideo = url.includes('.mp4') || url.includes('video');
+            carouselItems += itemIsVideo ? `<video controls src="${url}"></video>` : `<img src="${url}" alt="Media">`;
+          });
+          let carouselHtml = `
+            <div class="carousel-wrapper">
+              <div class="slide-carousel" id="carouselScroll">${carouselItems}</div>
+              <div class="slide-badge">${uniqueUrls.length} Media</div>
+              <div class="carousel-nav">
+                <button class="carousel-btn" id="carouselPrevBtn" onclick="carouselPrev()">${ICONS.prev} Prev</button>
+                <div class="carousel-counter" id="carouselCounter">1 / ${uniqueUrls.length}</div>
+                <button class="carousel-btn" id="carouselNextBtn" onclick="carouselNext()">Next ${ICONS.next}</button>
+              </div>
+            </div>
+          `;
+          mediaBox.innerHTML = carouselHtml;
+
+          let btns = `<button class="dl-btn primary" onclick="downloadAllIgMedia()">${ICONS.layers} Download Semua (${uniqueUrls.length})</button>`;
+          uniqueUrls.forEach((url, idx) => {
+            const itemIsVideo = url.includes('.mp4') || url.includes('video');
+            const ext = itemIsVideo ? 'mp4' : 'jpg';
+            const icon = itemIsVideo ? ICONS.download : ICONS.image;
+            const label = itemIsVideo ? 'Video' : 'Foto';
+            btns += `<button class="dl-btn" onclick="downloadFile('${url}', 'instagram_${label.toLowerCase()}_${idx+1}.${ext}')">${icon} Download ${label} ${idx+1}</button>`;
+          });
+          downloadButtons.innerHTML = btns;
+          window._igMediaUrls = uniqueUrls;
+          setTimeout(initCarousel, 100);
+        }
+
+        resultCard.style.display = 'block';
+      } catch (error) {
+        console.error(error);
+        alert('Gagal mengambil data Instagram. Pastikan URL benar!');
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    async function downloadAllIgMedia() {
+      const urls = window._igMediaUrls || [];
+      if (urls.length === 0) return;
+      for (let i = 0; i < urls.length; i++) {
+        const itemIsVideo = urls[i].includes('.mp4') || urls[i].includes('video');
+        const ext = itemIsVideo ? 'mp4' : 'jpg';
+        await downloadFile(urls[i], `instagram_media_${i+1}.${ext}`);
+        await new Promise(r => setTimeout(r, 800));
+      }
+    }
+
+    async function generateBrat() {
+      const textInput = document.getElementById('bratText').value.trim();
+      const loader = document.getElementById('bratLoader');
+      const resultCard = document.getElementById('bratResultCard');
+      const mediaBox = document.getElementById('bratMediaBox');
+      const downloadButtons = document.getElementById('bratDownloadButtons');
+
+      if (!textInput) { alert('Harap masukkan teks terlebih dahulu!'); return; }
+
+      loader.style.display = 'block';
+      resultCard.style.display = 'none';
+      mediaBox.innerHTML = '';
+      downloadButtons.innerHTML = '';
+
+      const imageUrl = `https://api.ikyyxd.my.id/canvas/bratv1?apikey=kyzz&text=${encodeURIComponent(textInput)}`;
+
+      try {
+        const img = new Image();
+        img.onload = function() {
+          mediaBox.innerHTML = `<img src="${imageUrl}" alt="Brat Image">`;
+          downloadButtons.innerHTML = `<button class="dl-btn primary" onclick="downloadFile('${imageUrl}', 'brat_generator.png')">${ICONS.download} Download Gambar</button>`;
+          resultCard.style.display = 'block';
+          loader.style.display = 'none';
+        };
+        img.onerror = function() {
+          alert('Gagal memuat gambar dari server API. Coba lagi!');
+          loader.style.display = 'none';
+        };
+        img.src = imageUrl;
+      } catch (error) {
+        console.error(error);
+        alert('Gagal membuat gambar Brat.');
+        loader.style.display = 'none';
+      }
+    }
+
+    async function fetchFreeFire() {
+      const uidInput = document.getElementById('ffUid').value.trim();
+      const loader = document.getElementById('ffLoader');
+      const resultCard = document.getElementById('ffResultCard');
+      const bannerBox = document.getElementById('ffBannerBox');
+      const detailsBox = document.getElementById('ffDetailsBox');
+
+      if (!uidInput) { alert('Harap masukkan UID Free Fire!'); return; }
+
+      loader.style.display = 'block';
+      resultCard.style.display = 'none';
+
+      const apiUrl = `https://api.ikyyxd.my.id/stalk/epepid?uid=${encodeURIComponent(uidInput)}`;
+
+      try {
+        const res = await fetch(apiUrl);
+        const json = await res.json();
+        if (!json.status || !json.data) throw new Error('Data akun tidak ditemukan.');
+
+        const data = json.data;
+        if (data.banner_image) {
+          bannerBox.style.display = 'block';
+          bannerBox.innerHTML = `<img src="${data.banner_image}" alt="FF Banner" onerror="this.parentNode.style.display='none'">`;
+        } else {
+          bannerBox.style.display = 'none';
+        }
+
+        detailsBox.innerHTML = `
+          <div class="stalk-info-item"><span class="label">Nama</span><span class="value">${data.name || '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">UID</span><span class="value">${data.uid || '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">Level</span><span class="value">${data.level ?? '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">Region</span><span class="value">${data.region || '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">Likes</span><span class="value">${data.likes ? Number(data.likes).toLocaleString('id-ID') : '0'}</span></div>
+          <div class="stalk-info-item"><span class="label">BR Point</span><span class="value">${data.br_rank_point ?? '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">CS Point</span><span class="value">${data.cs_rank_point ?? '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">Guild</span><span class="value">${data.guild_name || '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">Dibuat</span><span class="value">${formatDate(data.created_at)}</span></div>
+          <div class="stalk-info-item"><span class="label">Login Terakhir</span><span class="value">${formatDate(data.last_login)}</span></div>
+        `;
+        resultCard.style.display = 'block';
+      } catch (error) {
+        console.error(error);
+        alert('Gagal mengambil data akun. Pastikan UID benar!');
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    async function fetchRoblox() {
+      const usernameInput = document.getElementById('robloxUsername').value.trim();
+      const loader = document.getElementById('robloxLoader');
+      const resultCard = document.getElementById('robloxResultCard');
+      const avatarBox = document.getElementById('robloxAvatarBox');
+      const detailsBox = document.getElementById('robloxDetailsBox');
+
+      if (!usernameInput) { alert('Harap masukkan Username Roblox!'); return; }
+
+      loader.style.display = 'block';
+      resultCard.style.display = 'none';
+
+      const apiUrl = `https://api.ikyyxd.my.id/stalk/roblox?username=${encodeURIComponent(usernameInput)}`;
+
+      try {
+        const res = await fetch(apiUrl);
+        const json = await res.json();
+        if (!json.status || !json.result) throw new Error('Data Roblox tidak ditemukan.');
+
+        const acc = json.result.account || {};
+        const presence = json.result.presence || {};
+        const stats = json.result.stats || {};
+
+        if (acc.profilePicture) {
+          avatarBox.style.display = 'block';
+          avatarBox.innerHTML = `<img src="${acc.profilePicture}" alt="Roblox Avatar" onerror="this.parentNode.style.display='none'">`;
+        } else {
+          avatarBox.style.display = 'none';
+        }
+
+        detailsBox.innerHTML = `
+          <div class="stalk-info-item"><span class="label">Display Name</span><span class="value">${acc.displayName || '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">Username</span><span class="value">@${acc.username || '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">Status</span><span class="value">${presence.isOnline ? 'Online' : 'Offline'}</span></div>
+          <div class="stalk-info-item"><span class="label">Aktivitas</span><span class="value">${presence.recentGame || '-'}</span></div>
+          <div class="stalk-info-item"><span class="label">Teman</span><span class="value">${stats.friendCount ?? 0}</span></div>
+          <div class="stalk-info-item"><span class="label">Pengikut</span><span class="value">${stats.followers ?? 0}</span></div>
+          <div class="stalk-info-item"><span class="label">Mengikuti</span><span class="value">${stats.following ?? 0}</span></div>
+          <div class="stalk-info-item"><span class="label">Banned</span><span class="value">${acc.isBanned ? 'Ya' : 'Tidak'}</span></div>
+          <div class="stalk-info-item"><span class="label">Dibuat</span><span class="value">${formatDate(acc.created)}</span></div>
+          <div class="stalk-info-item"><span class="label">Deskripsi</span><span class="value">${acc.description || '-'}</span></div>
+        `;
+        resultCard.style.display = 'block';
+      } catch (error) {
+        console.error(error);
+        alert('Gagal mengambil data Roblox. Pastikan username benar!');
+      } finally {
+        loader.style.display = 'none';
+      }
+    }
+
+    async function downloadFile(fileUrl, fileName) {
+      try {
+        if (fileUrl.startsWith('data:')) {
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = fileUrl;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => a.remove(), 500);
+          return;
+        }
+
+        const response = await fetch(fileUrl, { mode: 'cors' });
+        if (!response.ok) throw new Error('CORS or Network issue');
+        
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = blobUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        
+        setTimeout(() => {
+          window.URL.revokeObjectURL(blobUrl);
+          a.remove();
+        }, 1000);
+      } catch (err) {
+        console.warn('Download fallback (buka di tab baru):', err);
+        window.open(fileUrl, '_blank');
+      }
+    }
+  </script>
+
+</body>
+</html>
