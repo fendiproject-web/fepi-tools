@@ -33,44 +33,31 @@ export default async function handler(req, res) {
     }
     clean = clean.replace(/^@/, '');
     
-    const apiUrl = `https://api.betabotz.eu.org/api/stalk/ig?apikey=${apiKey}&username=${encodeURIComponent(clean)}`;
+    // URL asli Betabotz
+    const betabotzUrl = `https://api.betabotz.eu.org/api/stalk/ig?apikey=${apiKey}&username=${encodeURIComponent(clean)}`;
     
-    // Headers browser LENGKAP biar lolos Cloudflare
-    const response = await fetch(apiUrl, {
+    // Bungkus dengan proxy CORS (biar lolos Cloudflare)
+    // Pakai allorigins.win — proxy gratis yang sering lolos Cloudflare
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(betabotzUrl)}`;
+    
+    const response = await fetch(proxyUrl, {
       method: 'GET',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'none',
-        'Sec-Fetch-User': '?1',
-        'Cache-Control': 'max-age=0',
-        'Referer': 'https://www.google.com/'
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'id-ID,id;q=0.9,en;q=0.8'
       }
     });
     
     const text = await response.text();
     
-    // Cek apakah response JSON atau HTML
     let data;
     try {
       data = JSON.parse(text);
     } catch (e) {
-      // Response bukan JSON → kemungkinan Cloudflare
-      const isCloudflare = text.includes('Just a moment') || 
-                          text.includes('cf-browser-verification') ||
-                          text.includes('<!DOCTYPE');
-      
       return res.status(200).json({
         status: false,
-        message: isCloudflare 
-          ? 'Cloudflare challenge: Betabotz memblokir request dari server. Pakai Apps Script saja.'
-          : 'Response bukan JSON: ' + text.substring(0, 200),
+        message: 'Proxy gagal — Betabotz masih blokir',
         preview: text.substring(0, 300)
       });
     }
